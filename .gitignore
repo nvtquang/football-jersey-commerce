@@ -1,0 +1,10 @@
+.idea/
+.vscode/
+node_modules/
+dist/
+target/
+.env
+.env.local
+*.log
+backend/src/main/resources/privateKey.pem
+backend/src/main/resources/publicKey.pem
