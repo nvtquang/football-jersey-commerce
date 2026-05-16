@@ -35,7 +35,11 @@ public class OrderResource {
 
     @GET
     public List<OrderSummary> history() {
-        return Order.<Order>listAll().stream().map(this::toSummary).toList();
+        if (isAdmin()) {
+            return allOrders();
+        }
+        User user = currentUser();
+        return Order.<Order>find("user.id", user.id).stream().map(this::toSummary).toList();
     }
 
     @POST
@@ -86,7 +90,7 @@ public class OrderResource {
     @Path("/admin")
     @RolesAllowed("ADMIN")
     public List<OrderSummary> adminOrders() {
-        return Order.<Order>listAll().stream().map(this::toSummary).toList();
+        return allOrders();
     }
 
     @PATCH
@@ -102,6 +106,14 @@ public class OrderResource {
     private OrderSummary toSummary(Order order) {
         String customer = order.user == null ? order.recipientName : order.user.fullName;
         return new OrderSummary(order.id, order.orderCode, customer, order.status, order.totalAmount);
+    }
+
+    private List<OrderSummary> allOrders() {
+        return Order.<Order>listAll().stream().map(this::toSummary).toList();
+    }
+
+    private boolean isAdmin() {
+        return jwt != null && jwt.getGroups() != null && jwt.getGroups().contains("ADMIN");
     }
 
     private User currentUser() {
