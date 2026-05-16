@@ -140,10 +140,6 @@ export default function AdminManagement() {
           </form>
           {users.map((user) => <div className="mini-row" key={user.id}><span>{user.email}</span><div className="row-actions"><button className="ghost" onClick={() => toggleUser(user)}>{user.role}</button><button onClick={() => deleteUser(user)}><Trash2 size={16} /></button></div></div>)}
         </article>
-        <article>
-          <h2>Inventory alerts</h2>
-          <p className="muted">Dữ liệu tồn kho được quản lý trong Product management qua API `/api/products`.</p>
-        </article>
       </div>
     </section>
   );
