@@ -25,6 +25,20 @@ export default function LoginPage() {
     }
   }
 
+  async function quickLogin(nextEmail) {
+    setEmail(nextEmail);
+    setPassword('12345678');
+    setError('');
+    try {
+      const nextUser = await login(nextEmail, '12345678');
+      toast.success('Đăng nhập thành công', `Xin chào ${nextUser.name}`);
+      navigate(nextUser.role === 'ADMIN' ? '/admin' : '/');
+    } catch (err) {
+      setError(err.message);
+      toast.error('Đăng nhập thất bại', err.message);
+    }
+  }
+
   return (
     <main className="auth-page">
       <form className="auth-panel" onSubmit={submit}>
@@ -34,7 +48,13 @@ export default function LoginPage() {
         {error && <div className="form-alert">{error}</div>}
         <label>Email<input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required /></label>
         <label>Mật khẩu<input value={password} onChange={(e) => setPassword(e.target.value)} type="password" minLength={8} required /></label>
-        <button className="primary" type="submit">Đăng nhập</button>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <button className="primary" type="submit" justify="center">Đăng nhập</button>
+        </div>
+        {/* <div className="quick-login">
+          <button type="button" onClick={() => quickLogin('superadmin@tqsport.vn')}>Vào ADMIN</button>
+          <button type="button" onClick={() => quickLogin('user@tqsport.vn')}>Vào USER</button>
+        </div> */}
         <Link className="auth-switch" to="/register"><UserPlus size={18} /> Tạo tài khoản </Link>
       </form>
     </main>

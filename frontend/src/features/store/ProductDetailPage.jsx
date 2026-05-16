@@ -33,7 +33,7 @@ export default function ProductDetailPage() {
         <p className="kicker">{product.team} · {product.category}</p>
         <h1>{product.name}</h1>
         <strong className="price">{formatCurrency(product.price)}</strong>
-        <p className="muted">Chất liệu thoáng khí, form thể thao, hỗ trợ in tên và số áo. Hiển thị tiếng Việt chuẩn UTF-8 trên toàn hệ thống.</p>
+        <p className="muted">Chất liệu thoáng khí, form thể thao, hỗ trợ in tên và số áo. </p>
         <div className="size-grid">
           {['S', 'M', 'L', 'XL', '2XL'].map((size) => (
             <button className={selectedSize === size ? 'selected' : ''} key={size} onClick={() => setSelectedSize(size)} type="button" aria-pressed={selectedSize === size}>

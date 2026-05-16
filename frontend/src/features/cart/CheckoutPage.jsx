@@ -6,9 +6,9 @@ import { useToast } from '../../components/ui/ToastProvider.jsx';
 
 export default function CheckoutPage() {
   const [form, setForm] = useState({
-    recipientName: 'Nguyễn Văn TQ',
-    recipientPhone: '0900000000',
-    shippingAddress: 'Quận 1, TP. Hồ Chí Minh',
+    recipientName: '',
+    recipientPhone: '',
+    shippingAddress: '',
     note: '',
   });
   const { clear } = useCart();

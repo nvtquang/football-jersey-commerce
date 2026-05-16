@@ -77,6 +77,8 @@ textarea { min-height: 100px; resize: vertical; }
 .auth-panel { width: min(440px, 100%); }
 .form-alert { margin: 14px 0; padding: 10px 12px; border-radius: 8px; background: #fee2e2; color: #991b1b; font-weight: 800; }
 .auth-switch { display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 14px; width: 100%; min-height: 42px; border: 1px solid var(--line); border-radius: 8px; font-weight: 900; }
+.quick-login { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 12px; }
+.quick-login button { min-height: 40px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); font-weight: 900; }
 .footer { display: flex; justify-content: space-between; gap: 16px; padding: 28px clamp(16px, 4vw, 48px); color: #d8e3f1; background: var(--ink); }
 
 .admin-shell { min-height: 100vh; display: grid; grid-template-columns: 250px 1fr; background: #eef3f8; }
