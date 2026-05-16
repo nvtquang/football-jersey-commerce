@@ -49,7 +49,7 @@ export default function RegisterPage() {
         <label>Email<input value={form.email} onChange={(e) => updateField('email', e.target.value)} type="email" required /></label>
         <label>Mật khẩu<input value={form.password} onChange={(e) => updateField('password', e.target.value)} type="password" minLength={8} required /></label>
         <label>Xác nhận mật khẩu<input value={form.confirmPassword} onChange={(e) => updateField('confirmPassword', e.target.value)} type="password" minLength={8} required /></label>
-        <button className="primary" type="submit">Đăng ký</button>
+        <div style={{ display: 'flex', justifyContent: 'center' }} ><button className="primary" type="submit">Đăng ký</button></div>
         <Link className="auth-switch" to="/login">Đã có tài khoản? Đăng nhập</Link>
       </form>
     </main>
