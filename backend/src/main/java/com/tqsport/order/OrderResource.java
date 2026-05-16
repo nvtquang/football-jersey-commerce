@@ -2,8 +2,14 @@ package com.tqsport.order;
 
 import com.tqsport.auth.User;
 import com.tqsport.order.OrderEntities.Order;
+import com.tqsport.order.OrderEntities.OrderItem;
+import com.tqsport.product.Product;
+import com.tqsport.product.ProductVariant;
 import jakarta.annotation.security.RolesAllowed;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
@@ -13,12 +19,17 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import java.math.BigDecimal;
 import java.util.List;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @Path("/api/orders")
+@Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 @RolesAllowed({"USER", "ADMIN"})
 public class OrderResource {
-    public record CheckoutRequest(String recipientName, String recipientPhone, String shippingAddress, String note) {}
+    @Inject JsonWebToken jwt;
+
+    public record CheckoutItem(Long productId, String size, int quantity) {}
+    public record CheckoutRequest(String recipientName, String recipientPhone, String shippingAddress, String note, List<CheckoutItem> items) {}
     public record OrderSummary(Long id, String orderCode, String customer, String status, BigDecimal totalAmount) {}
     public record OrderStatusUpdate(String status) {}
 
@@ -30,7 +41,11 @@ public class OrderResource {
     @POST
     @Transactional
     public OrderSummary checkout(CheckoutRequest request) {
-        User user = User.findAll().firstResult();
+        if (request.items() == null || request.items().isEmpty()) {
+            throw new BadRequestException("Cart is empty");
+        }
+
+        User user = currentUser();
         Order order = new Order();
         order.orderCode = "TS-" + System.currentTimeMillis();
         order.user = user;
@@ -41,6 +56,29 @@ public class OrderResource {
         order.shippingAddress = request.shippingAddress();
         order.note = request.note();
         order.persist();
+
+        for (CheckoutItem item : request.items()) {
+            if (item.quantity() <= 0) {
+                throw new BadRequestException("Invalid item quantity");
+            }
+
+            Product product = Product.findById(item.productId());
+            if (product == null || !"ACTIVE".equals(product.status)) {
+                throw new BadRequestException("Product is not available");
+            }
+
+            ProductVariant variant = findVariant(product, item.size());
+            OrderItem orderItem = new OrderItem();
+            orderItem.order = order;
+            orderItem.variant = variant;
+            orderItem.productName = product.name;
+            orderItem.unitPrice = product.price;
+            orderItem.quantity = item.quantity();
+            orderItem.persist();
+
+            order.totalAmount = order.totalAmount.add(product.price.multiply(BigDecimal.valueOf(item.quantity())));
+        }
+
         return toSummary(order);
     }
 
@@ -64,5 +102,21 @@ public class OrderResource {
     private OrderSummary toSummary(Order order) {
         String customer = order.user == null ? order.recipientName : order.user.fullName;
         return new OrderSummary(order.id, order.orderCode, customer, order.status, order.totalAmount);
+    }
+
+    private User currentUser() {
+        if (jwt != null && jwt.getSubject() != null) {
+            User user = User.find("email", jwt.getSubject()).firstResult();
+            if (user != null) return user;
+        }
+        return User.findAll().firstResult();
+    }
+
+    private ProductVariant findVariant(Product product, String size) {
+        if (size != null && !size.isBlank()) {
+            ProductVariant sized = ProductVariant.find("product.id = ?1 and size = ?2", product.id, size).firstResult();
+            if (sized != null) return sized;
+        }
+        return ProductVariant.find("product.id", product.id).firstResult();
     }
 }

@@ -307,7 +307,11 @@ export const orderApi = {
   checkout(payload) {
     return apiFirst(() => api.post('/orders', payload), () => {
       const state = readState();
-      const order = { id: nextId(state.orders), orderCode: `TS-${Date.now()}`, customer: payload.recipientName, status: 'PENDING', totalAmount: 0 };
+      const totalAmount = (payload.items || []).reduce((sum, item) => {
+        const product = state.products.find((row) => Number(row.id) === Number(item.productId));
+        return sum + Number(product?.price || 0) * Number(item.quantity || 0);
+      }, 0);
+      const order = { id: nextId(state.orders), orderCode: `TS-${Date.now()}`, customer: payload.recipientName, status: 'PENDING', totalAmount };
       state.orders.push(order);
       writeState(state);
       return order;

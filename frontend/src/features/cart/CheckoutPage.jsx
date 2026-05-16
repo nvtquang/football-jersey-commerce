@@ -1,5 +1,6 @@
 import { CheckCircle2 } from 'lucide-react';
 import { useState } from 'react';
+import { formatCurrency } from '../../lib/mockData.js';
 import { orderApi } from '../../lib/tqsportApi.js';
 import { useCart } from './CartContext.jsx';
 import { useToast } from '../../components/ui/ToastProvider.jsx';
@@ -11,7 +12,7 @@ export default function CheckoutPage() {
     shippingAddress: '',
     note: '',
   });
-  const { clear } = useCart();
+  const { items, total, clear } = useCart();
   const toast = useToast();
 
   function updateField(field, value) {
@@ -20,7 +21,14 @@ export default function CheckoutPage() {
 
   async function placeOrder() {
     try {
-      await orderApi.checkout(form);
+      await orderApi.checkout({
+        ...form,
+        items: items.map((item) => ({
+          productId: item.id,
+          size: item.size,
+          quantity: item.quantity,
+        })),
+      });
       clear();
       toast.success('Đặt hàng thành công', 'Đơn hàng đã chuyển sang trạng thái chờ xử lý.');
     } catch (error) {
@@ -41,7 +49,8 @@ export default function CheckoutPage() {
         <CheckCircle2 size={30} />
         <h2>Hoàn tất đặt hàng</h2>
         <p className="muted">Đơn hàng sẽ được lưu vào lịch sử và chuyển sang trạng thái chờ xử lý.</p>
-        <button className="primary block" onClick={placeOrder}>Đặt hàng</button>
+        <div className="summary-row"><span>Tổng đơn</span><strong>{formatCurrency(total)}</strong></div>
+        <button className="primary block" onClick={placeOrder} disabled={items.length === 0}>Đặt hàng</button>
       </aside>
     </main>
   );
