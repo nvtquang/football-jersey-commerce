@@ -1,5 +1,5 @@
 # TQSport
-
+# football-jersey-commerce
 Full-stack football apparel e-commerce platform for club and national team jerseys, training kits, and sportswear.
 
 ## Stack
@@ -45,4 +45,4 @@ Default API docs are exposed at `/q/swagger-ui`.
 
 ## Account
 Admin mẫu: admin@tqsport.vn / 12345678. User mẫu: user@tqsport.vn / 12345678
-# football-jersey-commerce
+
