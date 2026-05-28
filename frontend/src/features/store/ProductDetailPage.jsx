@@ -8,12 +8,13 @@ import { useToast } from '../../components/ui/ToastProvider.jsx';
 
 export default function ProductDetailPage() {
   const { slug } = useParams();
-  const [product, setProduct] = useState(() => fallbackProducts.find((item) => item.slug === slug) ?? fallbackProducts[0]);
+  const [product, setProduct] = useState(null);
   const [selectedSize, setSelectedSize] = useState('M');
   const { addItem } = useCart();
   const toast = useToast();
 
   useEffect(() => {
+    setProduct(null);
     productApi.detail(slug).then(setProduct).catch(() => {
       setProduct(fallbackProducts.find((item) => item.slug === slug) ?? fallbackProducts[0]);
     });
@@ -22,6 +23,10 @@ export default function ProductDetailPage() {
   function handleAddToCart() {
     addItem(product, selectedSize);
     toast.success('Đã thêm vào giỏ hàng', `${product.name} · Size ${selectedSize}`);
+  }
+
+  if (!product) {
+    return <main className="page"><div className="loading-panel">Đang tải sản phẩm...</div></main>;
   }
 
   return (
@@ -33,7 +38,7 @@ export default function ProductDetailPage() {
         <p className="kicker">{product.team} · {product.category}</p>
         <h1>{product.name}</h1>
         <strong className="price">{formatCurrency(product.price)}</strong>
-        <p className="muted">Chất liệu thoáng khí, form thể thao, hỗ trợ in tên và số áo. </p>
+        <p className="muted">Chất liệu thoáng khí, form thể thao, hỗ trợ in tên và số áo. Hiển thị tiếng Việt chuẩn UTF-8 trên toàn hệ thống.</p>
         <div className="size-grid">
           {['S', 'M', 'L', 'XL', '2XL'].map((size) => (
             <button className={selectedSize === size ? 'selected' : ''} key={size} onClick={() => setSelectedSize(size)} type="button" aria-pressed={selectedSize === size}>

@@ -12,9 +12,10 @@ export default function ProductsPage() {
   const [query, setQuery] = useState('');
   const [teamId, setTeamId] = useState(searchParams.get('teamId') || '');
   const [categoryId, setCategoryId] = useState('');
-  const [products, setProducts] = useState(fallbackProducts);
-  const [teams, setTeams] = useState(fallbackTeams.map((name) => ({ name })));
-  const [categories, setCategories] = useState(fallbackCategories.map((name) => ({ name })));
+  const [products, setProducts] = useState([]);
+  const [teams, setTeams] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
 
   useEffect(() => {
     catalogApi.teams().then(setTeams).catch(() => setTeams(fallbackTeams.map((name) => ({ name }))));
@@ -22,9 +23,11 @@ export default function ProductsPage() {
   }, []);
 
   useEffect(() => {
+    setLoadingProducts(true);
     productApi.list({ q: query, teamId, categoryId, size: 24 })
       .then(setProducts)
-      .catch(() => setProducts(fallbackProducts));
+      .catch(() => setProducts(fallbackProducts))
+      .finally(() => setLoadingProducts(false));
   }, [query, teamId, categoryId]);
 
   return (
@@ -40,7 +43,7 @@ export default function ProductsPage() {
           <div><p className="kicker">Catalog</p><h1>Football store</h1></div>
           <span>{products.length} sản phẩm</span>
         </div>
-        <div className="product-grid">{products.map((product) => <ProductCard key={product.id} product={product} />)}</div>
+        {loadingProducts ? <div className="loading-panel">Đang tải sản phẩm...</div> : <div className="product-grid">{products.map((product) => <ProductCard key={product.id} product={product} />)}</div>}
       </section>
     </main>
   );

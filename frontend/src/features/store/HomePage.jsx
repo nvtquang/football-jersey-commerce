@@ -8,15 +8,30 @@ import { bannerApi, catalogApi, productApi } from '../../lib/tqsportApi.js';
 
 export default function HomePage() {
   const { t } = useTranslation();
-  const [products, setProducts] = useState(fallbackProducts);
-  const [teams, setTeams] = useState(fallbackTeams.map((name) => ({ name })));
+  const [products, setProducts] = useState([]);
+  const [teams, setTeams] = useState([]);
   const [banner, setBanner] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    productApi.list({ size: 8 }).then(setProducts).catch(() => setProducts(fallbackProducts));
-    catalogApi.teams().then(setTeams).catch(() => setTeams(fallbackTeams.map((name) => ({ name }))));
-    bannerApi.list().then((rows) => setBanner(rows.find((item) => item.active) || null)).catch(() => setBanner(null));
+    async function loadHome() {
+      const [productResult, teamResult, bannerResult] = await Promise.allSettled([
+        productApi.list({ size: 8 }),
+        catalogApi.teams(),
+        bannerApi.list(),
+      ]);
+      setProducts(productResult.status === 'fulfilled' ? productResult.value : fallbackProducts);
+      setTeams(teamResult.status === 'fulfilled' ? teamResult.value : fallbackTeams.map((name) => ({ name })));
+      setBanner(bannerResult.status === 'fulfilled' ? bannerResult.value.find((item) => item.active) || null : null);
+      setLoading(false);
+    }
+
+    loadHome();
   }, []);
+
+  if (loading) {
+    return <main className="page"><div className="loading-panel">Đang tải dữ liệu...</div></main>;
+  }
 
   return (
     <main>
