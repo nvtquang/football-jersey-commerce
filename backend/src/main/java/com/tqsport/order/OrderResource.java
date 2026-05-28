@@ -18,6 +18,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
@@ -31,6 +32,10 @@ public class OrderResource {
     public record CheckoutItem(Long productId, String size, int quantity) {}
     public record CheckoutRequest(String recipientName, String recipientPhone, String shippingAddress, String note, List<CheckoutItem> items) {}
     public record OrderSummary(Long id, String orderCode, String customer, String status, BigDecimal totalAmount) {}
+    public record OrderLine(Long id, String productName, String size, BigDecimal unitPrice, int quantity, BigDecimal lineTotal) {}
+    public record OrderDetail(Long id, String orderCode, String customer, String status, BigDecimal totalAmount,
+            String recipientName, String recipientPhone, String shippingAddress, String note, Instant createdAt,
+            List<OrderLine> items) {}
     public record OrderStatusUpdate(String status) {}
 
     @GET
@@ -93,6 +98,17 @@ public class OrderResource {
         return allOrders();
     }
 
+    @GET
+    @Path("/admin/{id}")
+    @RolesAllowed("ADMIN")
+    public OrderDetail adminOrderDetail(@PathParam("id") Long id) {
+        Order order = Order.findById(id);
+        if (order == null) {
+            throw new BadRequestException("Order not found");
+        }
+        return toDetail(order);
+    }
+
     @PATCH
     @Path("/{id}/status")
     @RolesAllowed("ADMIN")
@@ -106,6 +122,19 @@ public class OrderResource {
     private OrderSummary toSummary(Order order) {
         String customer = order.user == null ? order.recipientName : order.user.fullName;
         return new OrderSummary(order.id, order.orderCode, customer, order.status, order.totalAmount);
+    }
+
+    private OrderDetail toDetail(Order order) {
+        String customer = order.user == null ? order.recipientName : order.user.fullName;
+        List<OrderLine> items = OrderItem.<OrderItem>find("order.id", order.id).stream()
+                .map(item -> {
+                    String size = item.variant == null ? "" : item.variant.size;
+                    BigDecimal lineTotal = item.unitPrice.multiply(BigDecimal.valueOf(item.quantity));
+                    return new OrderLine(item.id, item.productName, size, item.unitPrice, item.quantity, lineTotal);
+                })
+                .toList();
+        return new OrderDetail(order.id, order.orderCode, customer, order.status, order.totalAmount,
+                order.recipientName, order.recipientPhone, order.shippingAddress, order.note, order.createdAt, items);
     }
 
     private List<OrderSummary> allOrders() {

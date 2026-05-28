@@ -311,13 +311,43 @@ export const orderApi = {
         const product = state.products.find((row) => Number(row.id) === Number(item.productId));
         return sum + Number(product?.price || 0) * Number(item.quantity || 0);
       }, 0);
-      const order = { id: nextId(state.orders), orderCode: `TS-${Date.now()}`, customer: payload.recipientName, status: 'PENDING', totalAmount };
+      const order = {
+        id: nextId(state.orders),
+        orderCode: `TS-${Date.now()}`,
+        customer: payload.recipientName,
+        status: 'PENDING',
+        totalAmount,
+        recipientName: payload.recipientName,
+        recipientPhone: payload.recipientPhone,
+        shippingAddress: payload.shippingAddress,
+        note: payload.note,
+        createdAt: new Date().toISOString(),
+        items: (payload.items || []).map((item, index) => {
+          const product = state.products.find((row) => Number(row.id) === Number(item.productId));
+          const unitPrice = Number(product?.price || 0);
+          return {
+            id: index + 1,
+            productName: product?.name || 'Sản phẩm',
+            size: item.size || 'M',
+            unitPrice,
+            quantity: Number(item.quantity || 0),
+            lineTotal: unitPrice * Number(item.quantity || 0),
+          };
+        }),
+      };
       state.orders.push(order);
       writeState(state);
       return order;
     });
   },
   adminList: () => apiFirst(() => api.get('/orders/admin'), () => readState().orders),
+  detail(id) {
+    return apiFirst(() => api.get(`/orders/admin/${id}`), () => {
+      const order = readState().orders.find((row) => Number(row.id) === Number(id));
+      if (!order) throw new Error('Không tìm thấy đơn hàng.');
+      return order;
+    });
+  },
   updateStatus(id, status) {
     return apiFirst(() => api.patch(`/orders/${id}/status`, { status }), () => {
       const state = readState();
