@@ -2,7 +2,6 @@ package com.tqsport.admin;
 
 import com.tqsport.auth.User;
 import com.tqsport.auth.UserRole;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -16,7 +15,6 @@ import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 
 @Path("/api/admin/users")
-@RolesAllowed("ADMIN")
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 public class UserManagementResource {
     public record UserRow(Long id, String fullName, String email, UserRole role, boolean active) {}

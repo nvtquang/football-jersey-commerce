@@ -1,7 +1,6 @@
 package com.tqsport.cart;
 
 import com.tqsport.product.ProductVariant;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.Min;
 import jakarta.ws.rs.Consumes;
@@ -17,7 +16,6 @@ import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 
 @Path("/api/cart")
-@RolesAllowed({"USER", "ADMIN"})
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 public class CartResource {

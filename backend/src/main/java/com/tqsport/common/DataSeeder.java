@@ -38,10 +38,12 @@ public class DataSeeder {
     }
 
     private void ensureUser(String fullName, String email, String password, UserRole role) {
-        if (User.count("email", email) > 0) return;
-        User user = new User();
+        User user = User.find("email", email).firstResult();
+        if (user == null) {
+            user = new User();
+            user.email = email;
+        }
         user.fullName = fullName;
-        user.email = email;
         user.passwordHash = "{bcrypt-placeholder}" + password;
         user.role = role;
         user.active = true;

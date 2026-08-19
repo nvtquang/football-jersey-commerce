@@ -5,7 +5,6 @@ import com.tqsport.order.OrderEntities.Order;
 import com.tqsport.order.OrderEntities.OrderItem;
 import com.tqsport.product.Product;
 import com.tqsport.product.ProductVariant;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
@@ -25,7 +24,6 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 @Path("/api/orders")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-@RolesAllowed({"USER", "ADMIN"})
 public class OrderResource {
     @Inject JsonWebToken jwt;
 
@@ -93,14 +91,12 @@ public class OrderResource {
 
     @GET
     @Path("/admin")
-    @RolesAllowed("ADMIN")
     public List<OrderSummary> adminOrders() {
         return allOrders();
     }
 
     @GET
     @Path("/admin/{id}")
-    @RolesAllowed("ADMIN")
     public OrderDetail adminOrderDetail(@PathParam("id") Long id) {
         Order order = Order.findById(id);
         if (order == null) {
@@ -111,7 +107,6 @@ public class OrderResource {
 
     @PATCH
     @Path("/{id}/status")
-    @RolesAllowed("ADMIN")
     @Transactional
     public OrderSummary updateStatus(@PathParam("id") Long id, OrderStatusUpdate request) {
         Order order = Order.findById(id);

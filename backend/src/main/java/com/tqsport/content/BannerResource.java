@@ -1,6 +1,5 @@
 package com.tqsport.content;
 
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -23,7 +22,6 @@ public class BannerResource {
 
     @POST
     @Transactional
-    @RolesAllowed("ADMIN")
     public Banner create(Banner banner) {
         banner.persist();
         return banner;
@@ -32,7 +30,6 @@ public class BannerResource {
     @PUT
     @Path("/{id}")
     @Transactional
-    @RolesAllowed("ADMIN")
     public Banner update(@PathParam("id") Long id, Banner request) {
         Banner banner = Banner.findById(id);
         banner.title = request.title;
@@ -48,7 +45,6 @@ public class BannerResource {
     @DELETE
     @Path("/{id}")
     @Transactional
-    @RolesAllowed("ADMIN")
     public Response delete(@PathParam("id") Long id) {
         Banner.deleteById(id);
         return Response.noContent().build();

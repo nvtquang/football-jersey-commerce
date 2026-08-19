@@ -1,6 +1,5 @@
 package com.tqsport.admin;
 
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -12,7 +11,6 @@ import java.time.Instant;
 import java.util.Locale;
 
 @Path("/api/admin/uploads/images")
-@RolesAllowed("ADMIN")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 public class ImageUploadResource {

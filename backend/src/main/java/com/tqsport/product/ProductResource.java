@@ -1,6 +1,5 @@
 package com.tqsport.product;
 
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.BeanParam;
@@ -38,21 +37,18 @@ public class ProductResource {
     }
 
     @POST
-    @RolesAllowed("ADMIN")
     public ProductDtos.ProductSummary create(@Valid ProductDtos.ProductRequest request) {
         return service.create(request);
     }
 
     @PUT
     @Path("/{id}")
-    @RolesAllowed("ADMIN")
     public ProductDtos.ProductSummary update(@PathParam("id") Long id, @Valid ProductDtos.ProductRequest request) {
         return service.update(id, request);
     }
 
     @DELETE
     @Path("/{id}")
-    @RolesAllowed("ADMIN")
     public Response delete(@PathParam("id") Long id) {
         service.delete(id);
         return Response.noContent().build();

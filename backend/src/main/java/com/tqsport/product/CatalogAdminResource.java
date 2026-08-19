@@ -1,6 +1,5 @@
 package com.tqsport.product;
 
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -14,7 +13,6 @@ import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 
 @Path("/api/admin/catalog")
-@RolesAllowed("ADMIN")
 @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
 public class CatalogAdminResource {
     public record TeamRequest(String name, String slug, String type, String country, String logoUrl) {}

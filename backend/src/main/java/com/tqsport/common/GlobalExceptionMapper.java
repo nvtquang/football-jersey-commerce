@@ -1,6 +1,8 @@
 package com.tqsport.common;
 
 import jakarta.validation.ConstraintViolationException;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
@@ -13,6 +15,12 @@ public class GlobalExceptionMapper implements ExceptionMapper<Exception> {
     public Response toResponse(Exception exception) {
         if (exception instanceof NotFoundException) {
             return Response.status(404).entity(ApiError.of(404, exception.getMessage())).build();
+        }
+        if (exception instanceof NotAuthorizedException) {
+            return Response.status(401).entity(ApiError.of(401, exception.getMessage())).build();
+        }
+        if (exception instanceof BadRequestException) {
+            return Response.status(400).entity(ApiError.of(400, exception.getMessage())).build();
         }
         if (exception instanceof ConstraintViolationException validation) {
             var errors = validation.getConstraintViolations().stream()

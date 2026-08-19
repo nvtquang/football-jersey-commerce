@@ -4,8 +4,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotAuthorizedException;
-import java.util.Set;
-import io.smallrye.jwt.build.Jwt;
 
 @ApplicationScoped
 public class AuthService {
@@ -32,12 +30,7 @@ public class AuthService {
     }
 
     private AuthDtos.AuthResponse issueToken(User user) {
-        String token = Jwt.issuer("tqsport")
-                .subject(user.email)
-                .groups(Set.of(user.role.name()))
-                .claim("userId", user.id)
-                .expiresAt(System.currentTimeMillis() / 1000 + 3600 * 8)
-                .sign();
-        return new AuthDtos.AuthResponse(token, user.email, user.fullName, user.role);
+        return new AuthDtos.AuthResponse("", user.email, user.fullName, user.role);
     }
 }
+
