@@ -1,67 +1,36 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.3.5</version>
+    <relativePath/>
+  </parent>
+
   <groupId>com.tqsport</groupId>
-  <artifactId>tqsport-backend</artifactId>
+  <artifactId>tqsport-microservices</artifactId>
   <version>1.0.0</version>
+  <packaging>pom</packaging>
+  <name>TQSport Microservices</name>
+
+  <modules>
+    <module>shared-kernel</module>
+    <module>api-gateway</module>
+    <module>auth-service</module>
+    <module>catalog-service</module>
+    <module>order-service</module>
+    <module>content-service</module>
+    <module>admin-service</module>
+    <module>cart-service</module>
+  </modules>
+
   <properties>
-    <compiler-plugin.version>3.12.1</compiler-plugin.version>
-    <maven.compiler.release>21</maven.compiler.release>
+    <java.version>21</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
-    <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>3.9.4</quarkus.platform.version>
+    <springdoc.version>2.6.0</springdoc.version>
   </properties>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>${quarkus.platform.group-id}</groupId>
-        <artifactId>${quarkus.platform.artifact-id}</artifactId>
-        <version>${quarkus.platform.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-  <dependencies>
-    <dependency>
-    <groupId>io.quarkus</groupId>
-    <artifactId>quarkus-rest-jackson</artifactId>
-    </dependency>
-    <dependency><groupId>io.quarkus</groupId><artifactId>quarkus-hibernate-orm-panache</artifactId></dependency>
-    <dependency><groupId>io.quarkus</groupId><artifactId>quarkus-jdbc-mysql</artifactId></dependency>
-    <dependency><groupId>io.quarkus</groupId><artifactId>quarkus-flyway</artifactId></dependency>
-    <dependency><groupId>io.quarkus</groupId><artifactId>quarkus-smallrye-jwt</artifactId></dependency>
-    <dependency><groupId>io.quarkus</groupId><artifactId>quarkus-smallrye-jwt-build</artifactId></dependency>
-    <dependency><groupId>io.quarkus</groupId><artifactId>quarkus-smallrye-openapi</artifactId></dependency>
-    <dependency><groupId>io.quarkus</groupId><artifactId>quarkus-hibernate-validator</artifactId></dependency>
-    <dependency><groupId>io.quarkus</groupId><artifactId>quarkus-arc</artifactId></dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-    <groupId>${quarkus.platform.group-id}</groupId>
-    <artifactId>quarkus-maven-plugin</artifactId>
-    <version>${quarkus.platform.version}</version>
-    <extensions>true</extensions>
-
-    <executions>
-        <execution>
-            <goals>
-                <goal>build</goal>
-                <goal>generate-code</goal>
-                <goal>generate-code-tests</goal>
-            </goals>
-        </execution>
-    </executions>
-</plugin>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>${compiler-plugin.version}</version>
-      </plugin>
-    </plugins>
-  </build>
 </project>
-
